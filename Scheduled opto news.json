@@ -1,0 +1,200 @@
+{
+  "name": "Scheduled opto news",
+  "nodes": [
+    {
+      "parameters": {
+        "pollTimes": {
+          "item": [
+            {
+              "hour": 23
+            }
+          ]
+        },
+        "feedUrl": "https://www.healio.com/rss/ophthalmology"
+      },
+      "type": "n8n-nodes-base.rssFeedReadTrigger",
+      "typeVersion": 1,
+      "position": [
+        -512,
+        176
+      ],
+      "id": "edf88e5e-6a52-43bb-b165-fc02c051b8c9",
+      "name": "RSS Feed Trigger"
+    },
+    {
+      "parameters": {
+        "modelId": {
+          "__rl": true,
+          "value": "models/gemini-2.5-flash",
+          "mode": "list",
+          "cachedResultName": "models/gemini-2.5-flash"
+        },
+        "messages": {
+          "values": [
+            {
+              "content": "=Summarize this article in 3 bullet points.\nMake it easy to read, and highlight one key insight.\nArticle Title: {{$json[\"title\"]}}\nDescription: {{$json[\"contentSnippet\"]}}\nLink: {{$json[\"link\"]}}\n"
+            }
+          ]
+        },
+        "jsonOutput": true,
+        "options": {}
+      },
+      "type": "@n8n/n8n-nodes-langchain.googleGemini",
+      "typeVersion": 1,
+      "position": [
+        160,
+        -176
+      ],
+      "id": "b7989d29-e699-4299-9a70-f54b60460887",
+      "name": "Message a model",
+      "credentials": {
+        "googlePalmApi": {
+          "id": "4TGXrbA3CpKKBnwf",
+          "name": "Google Gemini(PaLM) Api account"
+        }
+      }
+    },
+    {
+      "parameters": {
+        "options": {}
+      },
+      "type": "n8n-nodes-base.splitInBatches",
+      "typeVersion": 3,
+      "position": [
+        -64,
+        32
+      ],
+      "id": "44ea6479-9c50-46b3-bc5f-82977d10bea5",
+      "name": "Loop Over Items"
+    },
+    {
+      "parameters": {},
+      "type": "n8n-nodes-base.noOp",
+      "name": "Replace Me",
+      "typeVersion": 1,
+      "position": [
+        256,
+        48
+      ],
+      "id": "afa64946-0162-4ae0-9ab4-15fe99dd13ee"
+    },
+    {
+      "parameters": {
+        "mode": "combine",
+        "combineBy": "combineByPosition",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.merge",
+      "typeVersion": 3.2,
+      "position": [
+        640,
+        240
+      ],
+      "id": "6a41f22f-a70d-4dcc-90ac-10d524beda2f",
+      "name": "Merge"
+    },
+    {
+      "parameters": {
+        "sendTo": "ayeshaashraf1566@gmail.com",
+        "subject": "Daily Optometry news update",
+        "message": "={{ $json[\"content\"] }}",
+        "options": {}
+      },
+      "type": "n8n-nodes-base.gmail",
+      "typeVersion": 2.1,
+      "position": [
+        976,
+        240
+      ],
+      "id": "705b7984-82eb-48d9-995b-5d6e4302607a",
+      "name": "Send a message",
+      "webhookId": "439b3a0c-27cd-4292-bab2-528e2b5ff3af",
+      "credentials": {
+        "gmailOAuth2": {
+          "id": "ch5Cj17xJFr4MPFF",
+          "name": "Gmail account 2"
+        }
+      }
+    }
+  ],
+  "pinData": {},
+  "connections": {
+    "RSS Feed Trigger": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          },
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 1
+          }
+        ]
+      ]
+    },
+    "Loop Over Items": {
+      "main": [
+        [
+          {
+            "node": "Message a model",
+            "type": "main",
+            "index": 0
+          }
+        ],
+        [
+          {
+            "node": "Replace Me",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Replace Me": {
+      "main": [
+        [
+          {
+            "node": "Loop Over Items",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Message a model": {
+      "main": [
+        [
+          {
+            "node": "Merge",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    },
+    "Merge": {
+      "main": [
+        [
+          {
+            "node": "Send a message",
+            "type": "main",
+            "index": 0
+          }
+        ]
+      ]
+    }
+  },
+  "active": false,
+  "settings": {
+    "executionOrder": "v1"
+  },
+  "versionId": "20824823-da02-4271-aa44-e3c6364156e7",
+  "meta": {
+    "instanceId": "56f16366906c64a911951fb893a675c39b5151855027ad46c278f4bb139716ff"
+  },
+  "id": "eJj8YzVFravT8H0a",
+  "tags": []
+}
