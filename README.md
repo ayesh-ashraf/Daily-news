@@ -46,7 +46,7 @@ This workflow isn’t limited to academic news — it can be adapted for multipl
 ### 2. Open n8n :Launch your n8n instance and import the provided workflow JSON file.
 
 ### 3. Configure Environment
-Add your RSS Feed URL (e.g., https://www.optometrytimes.com/rss)
+Add your RSS Feed URL 
 Add your AI API Key (OpenAI, Gemini, etc.)
 ### 4. Connect your Email Credentials in the “Send a Message” node.
 
